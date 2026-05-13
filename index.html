@@ -1,6 +1,107 @@
-<!-- Projekt A: Der Button auf der fremden Seite -->
-<a href="https://rr-utilities.github.io/pyhub/download.html?action=install" 
-   class="button-download" 
-   style="padding: 15px 25px; background: #306998; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-    <i class="fa-solid fa-download"></i> PyHub jetzt herunterladen
-</a>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyHub – Installation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="manifest" href="manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+
+
+<style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f2f5; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 500px; width: 90%; text-align: center; }
+        .icon { font-size: 3rem; color: #306998; margin-bottom: 1rem; }
+        .instruction-box { background: #eef2f7; padding: 1.5rem; border-radius: 12px; margin-top: 1rem; text-align: left; display: none; }
+        h2 { color: #333; }
+        .step { margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
+        .step-num { background: #306998; color: white; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="icon"><i class="fa-solid fa-laptop-code"></i></div>
+    <h2 id="device-title">Installation für dein Gerät</h2>
+    <p id="device-desc">Wir erkennen dein System...</p>
+
+    <!-- Anleitung für Desktop: Chrome / Brave / Edge -->
+    <div id="instr-pwa" class="instruction-box">
+        <strong>So installierst du PyHub am Desktop:</strong><br><br>
+        <div class="step"><div class="step-num">1</div><span>Klicke oben in der Adressleiste auf das <b>Installations-Symbol</b> (Monitor mit Pfeil).</span></div>
+        <div class="step"><div class="step-num">2</div><span>Bestätige mit <b>"Installieren"</b>.</span></div>
+        <div class="step"><div class="step-num">3</div><span>PyHub erscheint nun in deinem Dock oder Startmenü.</span></div>
+    </div>
+
+    <!-- Anleitung für Safari (Mac) -->
+    <div id="instr-safari-mac" class="instruction-box">
+        <strong>Installation in Safari (Mac):</strong><br><br>
+        <div class="step"><div class="step-num">1</div><span>Klicke oben im Menü auf <b>Ablage</b>.</span></div>
+        <div class="step"><div class="step-num">2</div><span>Wähle <b>"Zum Dock hinzufügen..."</b>.</span></div>
+        <div class="step"><div class="step-num">3</div><span>Bestätige den Namen und klicke auf "Hinzufügen".</span></div>
+    </div>
+
+    <!-- Anleitung für iOS (iPhone/iPad) -->
+    <div id="instr-ios" class="instruction-box">
+        <strong>Installation auf iPhone / iPad:</strong><br><br>
+        <div class="step"><div class="step-num">1</div><span>Tippe unten in Safari auf das <b>Teilen-Icon</b> (Quadrat mit Pfeil nach oben).</span></div>
+        <div class="step"><div class="step-num">2</div><span>Scrolle nach unten und tippe auf <b>"Zum Home-Bildschirm"</b>.</span></div>
+        <div class="step"><div class="step-num">3</div><span>Tippe oben rechts auf <b>"Hinzufügen"</b>.</span></div>
+    </div>
+
+    <!-- Fehlermeldung -->
+    <div id="instr-error" class="instruction-box" style="background: #fee; color: #a00;">
+        <i class="fa-solid fa-triangle-exclamation"></i> Download aktuell für diesen Browser nicht möglich.
+    </div>
+</div>
+
+<script>
+function detectDevice() {
+    const ua = navigator.userAgent;
+    const title = document.getElementById('device-title');
+    const desc = document.getElementById('device-desc');
+    
+    // Reset boxes
+    document.querySelectorAll('.instruction-box').forEach(b => b.style.display = 'none');
+
+    // 1. Check Mobil (iOS)
+    if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+        title.innerText = "PyHub für iOS";
+        desc.innerText = "So installierst du PyHub auf deinem iPhone oder iPad:";
+        document.getElementById('instr-ios').style.display = 'block';
+    } 
+    // 2. Check Desktop
+    else if (/Macintosh|Windows|Linux/.test(ua)) {
+        if (ua.includes("Chrome") || ua.includes("Brave") || ua.includes("Edg")) {
+            // Chromium Browser unterstützen den PWA-Prompt meist direkt
+            title.innerText = "PyHub am Desktop";
+            desc.innerText = "Dein Browser unterstützt die direkte Installation:";
+            document.getElementById('instr-pwa').style.display = 'block';
+        } else if (ua.includes("Safari") && !ua.includes("Chrome")) {
+            // Safari am Mac
+            title.innerText = "PyHub für Mac (Safari)";
+            desc.innerText = "Nutze die Safari-Funktion zum Hinzufügen zum Dock:";
+            document.getElementById('instr-safari-mac').style.display = 'block';
+        } else {
+            // Unbekannter Browser (z.B. Firefox am Desktop unterstützt PWAs oft nicht nativ)
+            document.getElementById('instr-error').style.display = 'block';
+        }
+    } 
+    // 3. Fallback
+    else {
+        document.getElementById('instr-error').style.display = 'block';
+    }
+}
+
+// Start der Erkennung beim Laden
+window.onload = detectDevice;
+</script>
+
+</body>
+</html>

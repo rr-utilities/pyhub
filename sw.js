@@ -1,23 +1,24 @@
-const cacheName = 'PyHub';
-const assets = [
-    '/',
-    '/index.html',
-    // '/assets/style.css',
-    '/favicon.jpg'
+const CACHE_NAME = 'pyhub-v1';
+const urlsToCache = [
+  'index.html',
+  // 'assets/styles.css',
+  'favicon.jpg'
 ];
 
-self.addEventListener('install', e => {
-    e.waitUntil(
-        caches.open(cacheName).then(cache => {
-            cache.addAll(assets);
-        })
-    );
+// Installation & Caching
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
 
-self.addEventListener('fetch', e => {
-    e.respondWith(
-        caches.match(e.request).then(response => {
-            return response || fetch(e.request);
-        })
-    );
+// Netzwerk-Anfragen abfangen (Offline-Fähigkeit)
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
+  );
 });
