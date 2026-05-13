@@ -1,0 +1,15 @@
+{
+    "short_name": "PyHub",
+    "name": "PyHub: Der rote Faden für Python",
+    "icons": [
+        {
+            "src": "assets/favicon.jpg",
+            "sizes": "512x512",
+            "type": "image/jpg"
+        }
+    ],
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#306998",
+    "theme_color": "#306998"
+}
