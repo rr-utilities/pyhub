@@ -3,9 +3,9 @@
     "name": "PyHub: Der rote Faden für Python",
     "icons": [
         {
-            "src": "assets/favicon.jpg",
+            "src": "favicon.png",
             "sizes": "512x512",
-            "type": "image/jpg"
+            "type": "image/png"
         }
     ],
     "start_url": "index.html",

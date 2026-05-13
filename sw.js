@@ -2,8 +2,8 @@ const cacheName = 'PyHub';
 const assets = [
     '/',
     '/index.html',
-    '/assets/style.css',
-    '/assets/favicon.jpg'
+    // '/assets/style.css',
+    '/favicon.jpg'
 ];
 
 self.addEventListener('install', e => {

@@ -3,27 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
     <title>PyHub v.1.0</title>
 
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link rel="icon" href="assets/favicon.jpg" type="image/jpg">
-    <link rel="apple-touch-icon" href="assets/favicon.jpg">
 </head>
 
 <body>
-    tba
+    <button id="installBtn" class="button">
+        <i class="fa-solid fa-download"></i> PyHub App herunterladen
+    </button>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log("Service Worker registriert!"))
+                .catch(err => console.log("Service Worker Fehler:", err));
+        }
+
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('Installation möglich: Event gefangen!');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User Antwort: ${outcome}`);
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PyHub wurde erfolgreich installiert');
+            installBtn.style.display = 'none';
+        });
+    </script>
 </body>
-
-<script>
-    if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-        .then(() => console.log("Service Worker registriert!"))
-        .catch(err => console.log("Fehler:", err));
-    }
-</script>
-
 </html>
