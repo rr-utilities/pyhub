@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>PyHub – Download & Installation</title>
+
+    <!-- Manifest und Styles -->
+    <link rel="manifest" href="manifest.json">
+<!--   <link rel="stylesheet" href="assets/styles.css">--> 
+    
+    <!-- Icons für den modernen Look -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --py-blue: #306998;
+            --py-yellow: #FFE052;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .download-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .icon-box {
+            font-size: 4rem;
+            color: var(--py-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .btn-install {
+            background-color: var(--py-blue);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-install:hover {
+            background-color: #265278;
+            transform: translateY(-2px);
+        }
+
+        .btn-install:active {
+            transform: translateY(0);
+        }
+
+        #statusMsg {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            min-height: 1.2rem;
+            font-weight: 500;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--py-blue);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="download-card">
+        <div class="icon-box">
+            <i class="fa-solid fa-cloud-arrow-down"></i>
+        </div>
+        <h1>PyHub installieren</h1>
+        <p>Hol dir den roten Faden für Python direkt auf deinen Mac oder dein Smartphone. Schnell, offline und immer griffbereit.</p>
+
+        <button id="installBtn" class="btn-install">
+            <i class="fa-solid fa-download"></i> Jetzt herunterladen
+        </button>
+
+        <p id="statusMsg"></p>
+
+        <a href="index.html" class="back-link">← Zurück zur Startseite</a>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+        const statusMsg = document.getElementById('statusMsg');
+
+        // 1. Service Worker registrieren
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log("Service Worker aktiv."))
+                .catch(err => console.log("SW Fehler:", err));
+        }
+
+        // 2. Installations-Event abfangen
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('App ist bereit zur Installation.');
+
+            // Check: Wurde die Seite mit ?action=install aufgerufen?
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'install') {
+                statusMsg.innerText = "Installations-Dialog wird geöffnet...";
+                statusMsg.style.color = "var(--py-blue)";
+                
+                // Kurze Verzögerung für den Browser-Check
+                setTimeout(() => {
+                    triggerInstallation();
+                }, 1000);
+            }
+        });
+
+        // 3. Die Installations-Funktion
+        async function triggerInstallation() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Installation: ${outcome}`);
+                deferredPrompt = null;
+            } else {
+                statusMsg.innerText = "PyHub ist bereits installiert oder wird von diesem Browser nicht unterstützt.";
+                statusMsg.style.color = "#d9534f";
+            }
+        }
+
+        // 4. Manueller Klick auf den Button
+        installBtn.addEventListener('click', () => {
+            triggerInstallation();
+        });
+
+        // 5. Erfolg melden
+        window.addEventListener('appinstalled', () => {
+            statusMsg.innerText = "PyHub wurde erfolgreich installiert!";
+            statusMsg.style.color = "#28a745";
+            installBtn.style.display = "none";
+        });
+    </script>
+
+</body>
+</html>
